@@ -106,7 +106,7 @@ public class StockDataProvider extends ContentProvider {
 
                 {
 
-                    stockQuoteUrl = new URL("http://finance.yahoo.com/webservice/v1/symbols/" + stockSymbol + "/quote?format=json");
+                    stockQuoteUrl = new URL("http://dev.markitondemand.com/MODApis/Api/v2/Quote/json/?symbol=" + stockSymbol);
 
                     BufferedReader reader = new BufferedReader(
                             new InputStreamReader(
@@ -124,6 +124,7 @@ public class StockDataProvider extends ContentProvider {
                     Message msg = Message.obtain();
                     msg.obj = stockObject;
 
+                    Log.d("STOCK QUOTE OUTPUT", stockObject.toString());
                     stockHandler.sendMessage(msg);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -138,11 +139,9 @@ public class StockDataProvider extends ContentProvider {
         public boolean handleMessage(Message msg) {
             try {
                 JSONObject stockObject = (JSONObject) msg.obj;
-                stock = new Stock(stockObject.getJSONObject("list")
-                        .getJSONArray("resources")
-                        .getJSONObject(0)
-                        .getJSONObject("resource")
-                        .getJSONObject("fields"));
+                stock = new Stock(stockObject.getString("Name")
+                        , stockObject.getString("Symbol")
+                        ,stockObject.getDouble("LastPrice"));
             } catch (Exception e){
                 e.printStackTrace();
             } finally {
